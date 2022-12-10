@@ -3,10 +3,16 @@ import  cors from "cors";
 import jwt from "jsonwebtoken";
 
 import { sample_users } from "./data";//temporary data to test without mongodb server
+//
+
+
+let app = express();
+app.use(cors());
+app.options('*', cors());
+//
 
 
 
-const app = express();
 app.use(express.json());//enable json body parsing
 //localhost:4200
 
