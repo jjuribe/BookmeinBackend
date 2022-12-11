@@ -23,7 +23,7 @@ recordRoutes.route("/users").get(async function (req, res) {
 });
 
 // post a new user
-recordRoutes.route("/users").post(async function (req, res, next) {
+recordRoutes.route("/users").post(async function (req, res) {
   // new user of User model
   const dbConnect = dbo.getDb();
   let user = new User();
@@ -31,8 +31,6 @@ recordRoutes.route("/users").post(async function (req, res, next) {
   user.username = req.body.username;
   user.password = req.body.password;
   user.roles = req.body.roles;
-  //password: req.body.password,
-  //roles: req.body.roles,
 
   console.log(req.body);
   console.log(user);
@@ -61,7 +59,7 @@ recordRoutes.route("/users/:id").delete(async function (req, res) {
   });
 });
 
-////login
+// login a user
 recordRoutes.route("/login").post(async function (req, res) {
   console.log("login in router")
   const dbConnect = dbo.getDb();
@@ -69,9 +67,6 @@ recordRoutes.route("/login").post(async function (req, res) {
 
   user.username = req.body.username;
   user.password = req.body.password;
-
-  console.log(req.body);
-  console.log(user);
 
   dbConnect
     .collection("users")
