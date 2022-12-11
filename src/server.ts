@@ -1,10 +1,6 @@
 import express from "express";
 import cors from "cors";
-import jwt from "jsonwebtoken";
 
-import { sample_users } from "./data"; //temporary data to test without mongodb server
-
-const mongoose = require("mongoose");
 const dbo = require("./db/conn");
 
 let app = express();
@@ -19,7 +15,7 @@ app.use(
 //routes
 app.use(require("./routes/record"));
 
-// test get call
+// test route
 app.get("/api", (req, res) => {
   res.send("Hello World");
 });
