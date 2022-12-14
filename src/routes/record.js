@@ -95,7 +95,7 @@ recordRoutes.route("/login").post(async function (req, res) {
 
 /// get all tickets
 
-recordRoutes.route("/api/tickets").get(async function (req, res) {
+recordRoutes.route("/tickets").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   dbConnect
     .collection("tickets")
@@ -113,7 +113,7 @@ recordRoutes.route("/api/tickets").get(async function (req, res) {
 
 // post a new ticket
 
-recordRoutes.route("/api/tickets").post(async function (req, res) {
+recordRoutes.route("/tickets").post(async function (req, res) {
   // new ticket of Ticket model
   const dbConnect = dbo.getDb();
   let ticket = new Ticket();
@@ -143,7 +143,7 @@ recordRoutes.route("/api/tickets").post(async function (req, res) {
 });
 
 // Get a ticket by CustomerId
-recordRoutes.route("/api/tickets/:customerid").get(async function (req, res) {
+recordRoutes.route("/tickets/:customerid").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   const customerid = req.params.customerid;
     dbConnect
@@ -163,7 +163,7 @@ recordRoutes.route("/api/tickets/:customerid").get(async function (req, res) {
 
 // Ticket update
 
-recordRoutes.route("/api/tickets/:id").put(async function (req, res) {
+recordRoutes.route("/tickets/:id").put(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
   const ticket = req.body;
@@ -194,7 +194,7 @@ recordRoutes.route("/api/tickets/:id").put(async function (req, res) {
 
 // Get all organizations
 
-recordRoutes.route("/api/organizations").get(async function (req, res) {
+recordRoutes.route("/organizations").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   dbConnect
     .collection("organizations")
@@ -213,7 +213,7 @@ recordRoutes.route("/api/organizations").get(async function (req, res) {
 // post a new organization
 
 
-recordRoutes.route("/api/organizations").post(async function (req, res) {
+recordRoutes.route("/organizations").post(async function (req, res) {
   // new organization of Organization model
   const dbConnect = dbo.getDb();
   let organization = new Organization();
@@ -244,7 +244,7 @@ recordRoutes.route("/api/organizations").post(async function (req, res) {
 
 // Get an organization by OrganizationId
 
-recordRoutes.route("/api/organizations/:id").get(async function (req, res) {
+recordRoutes.route("/organizations/:id").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
     dbConnect
@@ -265,7 +265,7 @@ recordRoutes.route("/api/organizations/:id").get(async function (req, res) {
 
 // Organization update
 
-recordRoutes.route("/api/organizations/:id").put(async function (req, res) {
+recordRoutes.route("/organizations/:id").put(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
   const organization = req.body;
@@ -299,7 +299,7 @@ recordRoutes.route("/api/organizations/:id").put(async function (req, res) {
 
 // Get all bookings
 
-recordRoutes.route("/api/bookings").get(async function (req, res) {
+recordRoutes.route("/bookings").get(async function (req, res) {
     const dbConnect = dbo.getDb();
     dbConnect
         .collection("bookings")
@@ -318,7 +318,7 @@ recordRoutes.route("/api/bookings").get(async function (req, res) {
 // post a new booking
 
 
-recordRoutes.route("/api/bookings").post(async function (req, res) {
+recordRoutes.route("/bookings").post(async function (req, res) {
   const givenSet = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   //to generate a random string of 5 characters // confirmation code  
   let code = "";
