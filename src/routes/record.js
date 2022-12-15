@@ -5,12 +5,14 @@ const { User } = require("../models/user");// User model
 const {Ticket} = require("../models/ticket");// Ticket model
 const {Organization} = require("../models/organization");// Organization model
 const {Booking} = require("../models/booking");// Booking model
+const {TimeSlot} = require("../models/timeslot");// TimeSlot model
 
 const recordRoutes = express.Router();
 const users = require("../models/user");
 const tickets = require("../models/ticket");
 const organizations = require("../models/organization");
 const bookings = require("../models/booking");
+const timeslots = require("../models/timeslot");
 
 // get all users
 recordRoutes.route("/users").get(async function (req, res) {
@@ -192,6 +194,22 @@ recordRoutes.route("/tickets/:id").put(async function (req, res) {
 });
 
 
+// Delete a ticket
+recordRoutes.route("/tickets/:id").delete(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect.collection("tickets").deleteOne({ _id: id }, function (err, result) {
+    if (err) {
+      res.status(400).send("Error deleting ticket!");
+      console.log(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+
+
 // Get all organizations
 
 recordRoutes.route("/organizations").get(async function (req, res) {
@@ -292,6 +310,24 @@ recordRoutes.route("/organizations/:id").put(async function (req, res) {
         } else {
             res.json(result);
             console.log("Organization updated Successfully");
+        }
+    });
+});
+
+// Organization delete
+
+recordRoutes.route("/organizations/:id").delete(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+    const query = { _id: id };
+    dbConnect.collection("organizations").deleteOne(query, function (err, result) {
+        if (err) {
+            res.status(400).send("Error deleting organization!");
+            console.log(err);
+            console.log("Error deleting organization!");
+        } else {
+            res.json(result);
+            console.log("Organization deleted Successfully");
         }
     });
 });
@@ -417,6 +453,25 @@ recordRoutes.route("/bookings/:id").put(async function (req, res) {
     });
 });
 
+// Delete a booking
+
+recordRoutes.route("/bookings/:id").delete(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const query = { _id: id };
+  dbConnect.collection("bookings").deleteOne(query, function (err, result) {
+    if (err) {
+      res.status(400).send("Error deleting booking! ",id);
+      console.log(err);
+      console.log("Error deleting booking! ", id);
+    } else {
+      res.json(result);
+      console.log("Booking deleted Successfully",id);
+    }
+  });
+});
+
+
 //Get all bookings by UserId
 
 recordRoutes.route("/bookings/user/:id").get(async function (req, res) {
@@ -461,6 +516,286 @@ recordRoutes.route("/bookings/serviceprovider/:id").get(async function (req, res
       }
     });
 });
+
+//Time slots
+//Get all time slots
+
+recordRoutes.route("/timeslots").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  dbConnect
+    .collection("timeslots")
+    .find({})
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+
+// post a new time slot
+
+recordRoutes.route("/timeslots").post(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const timeslot = req.body;
+  dbConnect.collection("timeslots").insertOne(timeslot, function (err, result) {
+    if (err) {
+      res.status(400).send("Error inserting time slot!");
+      console.log(err);
+      console.log("Error inserting time slot!");
+    } else {
+      res.json(result);
+      console.log("Time slot added");
+    }
+  });
+});
+
+// Get a time slot by TimeSlotId
+
+recordRoutes.route("/timeslots/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotId: id,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slot!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slot fetched");
+      }
+    });
+});
+
+
+// Time slot update
+
+recordRoutes.route("/timeslots/:id").put(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const timeslot = req.body;
+  const query = { _id: id };
+  const updateDoc = {
+    $set: {
+      TimeSlotId: timeslot.TimeSlotId,
+      TimeSlotDate: timeslot.TimeSlotDate,
+      TimeSlotStartTime: timeslot.TimeSlotStartTime,
+      TimeSlotEndTime: timeslot.TimeSlotEndTime,
+      TimeSlotStatus: timeslot.TimeSlotStatus,
+    },
+  };
+  dbConnect
+      .collection("timeslots")
+      .update
+      .one(query
+      , update
+      .Doc, function (err, result) {
+        if (err) {
+          res.status(400).send("Error updating time slot!");
+          console.log(err);
+          console.log("Error updating time slot!");
+        } else {
+          res.json(result);
+          console.log("Time slot updated Successfully");
+        }
+      });
+  });
+
+// Delete a time slot
+
+recordRoutes.route("/timeslots/:id").delete(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const query = { _id: id };
+  dbConnect.collection("timeslots").deleteOne(query, function (err, result) {
+    if (err) {
+      res.status(400).send("Error deleting time slot! ",id);
+      console.log(err);
+      console.log("Error deleting time slot! ", id);
+    } else {
+      res.json(result);
+      console.log("Time slot deleted Successfully",id);
+    }
+  });
+});
+
+// Get all time slots by date
+
+recordRoutes.route("/timeslots/date/:date").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const date = req.params.date;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotDate: date,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+
+// Get all time slots by date and Service Provider Id
+
+recordRoutes.route("/timeslots/date/:date/serviceprovider/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const date = req.params.date;
+  const id = req.params.id;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotDate: date,
+      TimeSlotServiceProviderId: id,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+// Get all time slots by Service Provider Id
+
+recordRoutes.route("/timeslots/serviceprovider/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotServiceProviderId: id,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+// Get all time slots by Service Provider Id and Status
+
+recordRoutes.route("/timeslots/serviceprovider/:id/status/:status").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const status = req.params.status;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotServiceProviderId: id,
+      TimeSlotStatus: status,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+//Get all Slots by Organization Id
+
+recordRoutes.route("/timeslots/organization/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotOrganizationId: id,
+    })
+    .limit(500)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+//Get all Slots by Organization Id and Status
+
+recordRoutes.route("/timeslots/organization/:id/status/:status").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const status = req.params.status;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotOrganizationId: id,
+      TimeSlotStatus: status,
+    })
+    .limit(500)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+//Get all Slots by Organization Id and Date
+
+recordRoutes.route("/timeslots/organization/:id/date/:date").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const date = req.params.date;
+  dbConnect
+    .collection("timeslots")
+    .find({
+      TimeSlotOrganizationId: id,
+      TimeSlotDate: date,
+    })
+    .limit(500)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching time slots!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Time slots fetched");
+      }
+    });
+});
+
+
+
+
+
 
 
 
