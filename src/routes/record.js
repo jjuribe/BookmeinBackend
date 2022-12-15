@@ -43,6 +43,16 @@ recordRoutes.route("/users").post(async function (req, res) {
 
   console.log(req.body);
   console.log(user);
+  //check if user already exists// Restricting duplicate user
+  dbConnect.collection("users").findOne({
+    username: user.username
+    }, function(err, result) {
+      if (err) {
+        res.status(400).send("Error fetching User!");
+        console.log(err);
+        
+      } else {
+        if (result == null) {
 
   dbConnect.collection("users").insertOne(user, function (err, result) {
     if (err) {
@@ -52,7 +62,15 @@ recordRoutes.route("/users").post(async function (req, res) {
       res.json(result);
     }
   });
+} else {
+  res.status(400).send("User already exists!");
+  console.log(result);
+}
+      }
+    });
 });
+
+
 
 // Delete a user
 recordRoutes.route("/users/:id").delete(async function (req, res) {
