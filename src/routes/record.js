@@ -39,6 +39,7 @@ recordRoutes.route("/users").post(async function (req, res) {
   user.username = req.body.username;
   user.password = req.body.password;
   user.roles = req.body.roles;
+  user.email = req.body.email;
 
   console.log(req.body);
   console.log(user);
@@ -94,6 +95,36 @@ recordRoutes.route("/login").post(async function (req, res) {
       }
     );
 });
+
+//update a user
+recordRoutes.route("/users/:id").put(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  let user = new User();
+
+  user.username = req.body.username;
+  user.password = req.body.password;
+  user.roles = req.body.roles;
+  user.email = req.body.email;
+  dbConnect
+    .collection("users")
+    .update
+    ({ _id: id }, { $set: user }, function (err, result) {
+      if (err) {
+        res.status(400).send("Error updating user!");
+        console.log(err);
+        
+      } else {
+        console.log("user not updated");
+        res.json(result);
+        console.log("User: " + user.username + " updated");
+      }
+      
+    });
+});
+
+  
+
 
 /// get all tickets
 
