@@ -6,6 +6,6 @@ export class timeslot {
     ServiceProviderId!: string;
     OrganizationId!: string;
     DefaultSlotDuration!: number;//in minutes
-    TimSlotStatus!: string;//"Active" or "Inactive"
+    TimeSlotStatus!: string;//"Active" or "Inactive"
 }
    
