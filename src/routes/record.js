@@ -356,6 +356,115 @@ recordRoutes.route("/bookings").post(async function (req, res) {
 });
 
 
+// Get a booking by BookingId
+
+recordRoutes.route("/bookings/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect
+    .collection("bookings")
+    .find({
+      BookingId: id,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching booking!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Booking fetched");
+      }
+    });
+});
+
+// Booking update
+
+recordRoutes.route("/bookings/:id").put(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  const booking = req.body;
+  const query = { _id: id };
+  const updateDoc = {
+    $set: {
+      BookingId: booking.BookingId,
+      BookingDate: booking.BookingDate,
+      BookingTime: booking.BookingTime,
+      Status: booking.Status,
+      BookingConfirmationCode: booking.BookingConfirmationCode,
+      BookingNotes: booking.BookingNotes,
+      BookingCreated: booking.BookingCreated,
+      BookingUpdated: booking.BookingUpdated,
+      BookingCancelled: booking.BookingCancelled,
+      BookingUserId: booking.BookingUserId,
+      BookingServiceProviderId: booking.BookingServiceProviderId,
+    },
+  };
+  dbConnect
+    .collection("bookings")
+    .update
+    .one(query
+    , update
+    .Doc, function (err, result) {
+      if (err) {
+        res.status(400).send("Error updating booking!");
+        console.log(err);
+        console.log("Error updating booking!");
+      } else {
+        res.json(result);
+        console.log("Booking updated Successfully");
+      }
+    });
+});
+
+//Get all bookings by UserId
+
+recordRoutes.route("/bookings/user/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect
+    .collection("bookings")
+    .find({
+      BookingUserId: id,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching booking!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Booking fetched");
+      }
+    });
+});
+
+
+// Get all bookings by Service Provider Id
+
+recordRoutes.route("/bookings/serviceprovider/:id").get(async function (req, res) {
+  const dbConnect = dbo.getDb();
+  const id = req.params.id;
+  dbConnect
+    .collection("bookings")
+    .find({
+      BookingServiceProviderId: id,
+    })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching booking!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Booking fetched");
+      }
+    });
+});
+
+
+
+
 
 
 
