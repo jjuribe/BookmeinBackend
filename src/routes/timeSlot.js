@@ -115,7 +115,7 @@ recordRoutes
 
 // Get all Slots by Organization Id and Date
 recordRoutes
-  .route("/timeslots/organization/:id/date/:date")
+  .route("/timeslots/organization/:id&:date")
   .get(async function (req, res) {
     const dbConnect = dbo.getDb();
     const id = req.params.id;
