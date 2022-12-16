@@ -1,11 +1,11 @@
 const express = require("express");
 //const mongoose = require("mongoose");
 const dbo = require("../db/conn");
-const { User } = require("../models/user");// User model
-const {Ticket} = require("../models/ticket");// Ticket model
-const {Organization} = require("../models/organization");// Organization model
-const {Booking} = require("../models/booking");// Booking model
-const {TimeSlot} = require("../models/timeslot");// TimeSlot model
+const { User } = require("../models/user"); // User model
+const { Ticket } = require("../models/ticket"); // Ticket model
+const { Organization } = require("../models/organization"); // Organization model
+const { Booking } = require("../models/booking"); // Booking model
+const { TimeSlot } = require("../models/timeslot"); // TimeSlot model
 
 const recordRoutes = express.Router();
 const users = require("../models/user");
@@ -44,33 +44,32 @@ recordRoutes.route("/users").post(async function (req, res) {
   console.log(req.body);
   console.log(user);
   //check if user already exists// Restricting duplicate user
-  dbConnect.collection("users").findOne({
-    username: user.username
-    }, function(err, result) {
+  dbConnect.collection("users").findOne(
+    {
+      username: user.username,
+    },
+    function (err, result) {
       if (err) {
         res.status(400).send("Error fetching User!");
         console.log(err);
-        
       } else {
         if (result == null) {
-
-  dbConnect.collection("users").insertOne(user, function (err, result) {
-    if (err) {
-      res.status(400).send("Error inserting user!");
-      console.log(err);
-    } else {
-      res.json(result);
-    }
-  });
-} else {
-  res.status(400).send("User already exists!");
-  console.log(result);
-}
+          dbConnect.collection("users").insertOne(user, function (err, result) {
+            if (err) {
+              res.status(400).send("Error inserting user!");
+              console.log(err);
+            } else {
+              res.json(result);
+            }
+          });
+        } else {
+          res.status(400).send("User already exists!");
+          console.log(result);
+        }
       }
-    });
+    }
+  );
 });
-
-
 
 // Delete a user
 recordRoutes.route("/users/:id").delete(async function (req, res) {
@@ -88,7 +87,7 @@ recordRoutes.route("/users/:id").delete(async function (req, res) {
 
 // login a user
 recordRoutes.route("/login").post(async function (req, res) {
-  console.log("login in router")
+  console.log("login in router");
   const dbConnect = dbo.getDb();
   let user = new User();
 
@@ -100,7 +99,7 @@ recordRoutes.route("/login").post(async function (req, res) {
     .findOne(
       { username: user.username, password: user.password },
       function (err, result) {
-        console.log("Login in server.ts")
+        console.log("Login in server.ts");
 
         if (err || result == null) {
           console.log(err);
@@ -126,44 +125,35 @@ recordRoutes.route("/users/:id").put(async function (req, res) {
   user.email = req.body.email;
   dbConnect
     .collection("users")
-    .update
-    ({ _id: id }, { $set: user }, function (err, result) {
+    .update({ _id: id }, { $set: user }, function (err, result) {
       if (err) {
         res.status(400).send("Error updating user!");
         console.log(err);
-        
       } else {
         console.log("user not updated");
         res.json(result);
         console.log("User: " + user.username + " updated");
       }
-      
     });
 });
 
-  
-
-
 /// get all tickets
-
 recordRoutes.route("/tickets").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   dbConnect
     .collection("tickets")
-      .find({})
-      .limit(50)
-      .toArray(function (err, result) {
-        if (err) {
-          res.status(400).send("Error fetching listings!");
-        } else {
-            res.json(result);
-        }
-      });
-
+    .find({})
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching listings!");
+      } else {
+        res.json(result);
+      }
+    });
 });
 
 // post a new ticket
-
 recordRoutes.route("/tickets").post(async function (req, res) {
   // new ticket of Ticket model
   const dbConnect = dbo.getDb();
@@ -171,115 +161,108 @@ recordRoutes.route("/tickets").post(async function (req, res) {
   ticket.CaseId = req.body.CaseId;
   ticket.CustomerId = req.body.CustomerId;
   ticket.Problem = req.body.Problem;
-    if (req.body.Solution == "") {
-        ticket.Solution = "Not yet solved";
-    } else {
-  ticket.Solution = req.body.Solution;
+  if (req.body.Solution == "") {
+    ticket.Solution = "Not yet solved";
+  } else {
+    ticket.Solution = req.body.Solution;
   }
   ticket.Status = req.body.Status;
   ticket.DateOpened = req.body.DateOpened;
   ticket.DateClosed = req.body.DateClosed;
-  console.log(req.body);//for testing
-  console.log(ticket);//for testing
-    dbConnect.collection("tickets").insertOne(ticket, function (err, result) {
-        if (err) {
-            res.status(400).send("Error inserting ticket!");
-            console.log(err);
-
-        } else {
-            res.json(result);
-            console.log("Ticket added");
-        }
-    });
+  console.log(req.body); //for testing
+  console.log(ticket); //for testing
+  dbConnect.collection("tickets").insertOne(ticket, function (err, result) {
+    if (err) {
+      res.status(400).send("Error inserting ticket!");
+      console.log(err);
+    } else {
+      res.json(result);
+      console.log("Ticket added");
+    }
+  });
 });
 
 // Get a ticket by CustomerId
 recordRoutes.route("/tickets/:customerid").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   const customerid = req.params.customerid;
-    dbConnect
-        .collection("tickets")
-        .find({ CustomerId: customerid })
-        .limit(50)
+  dbConnect
+    .collection("tickets")
+    .find({ CustomerId: customerid })
+    .limit(50)
 
-        .toArray(function (err, result) {
-            if (err) {
-                res.status(400).send("Error fetching listings!");
-            }
-            else {
-                res.json(result);
-            }
-        });
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching listings!");
+      } else {
+        res.json(result);
+      }
+    });
 });
 
 // Ticket update
-
 recordRoutes.route("/tickets/:id").put(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
   const ticket = req.body;
-    const query = { _id: id };
-    const updateDoc = {
-        $set: {
-            CaseId: ticket.CaseId,
-            CustomerId: ticket.CustomerId,
-            Problem: ticket.Problem,
-            Solution: ticket.Solution,
-            Status: ticket.Status,
-            DateOpened: ticket.DateOpened,
-            DateClosed: ticket.DateClosed
-        }
-    };
-    dbConnect.collection("tickets").updateOne(query, updateDoc, function (err, result) {
-        if (err) {
-            res.status(400).send("Error updating ticket!");
-            console.log(err);
-
-        } else {
-            res.json(result);
-            console.log("Ticket updated Successfully");
-        }
+  const query = { _id: id };
+  const updateDoc = {
+    $set: {
+      CaseId: ticket.CaseId,
+      CustomerId: ticket.CustomerId,
+      Problem: ticket.Problem,
+      Solution: ticket.Solution,
+      Status: ticket.Status,
+      DateOpened: ticket.DateOpened,
+      DateClosed: ticket.DateClosed,
+    },
+  };
+  dbConnect
+    .collection("tickets")
+    .updateOne(query, updateDoc, function (err, result) {
+      if (err) {
+        res.status(400).send("Error updating ticket!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Ticket updated Successfully");
+      }
     });
 });
-
 
 // Delete a ticket
 recordRoutes.route("/tickets/:id").delete(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
-  dbConnect.collection("tickets").deleteOne({ _id: id }, function (err, result) {
-    if (err) {
-      res.status(400).send("Error deleting ticket!");
-      console.log(err);
-    } else {
-      res.json(result);
-    }
-  });
+  dbConnect
+    .collection("tickets")
+    .deleteOne({ _id: id }, function (err, result) {
+      if (err) {
+        res.status(400).send("Error deleting ticket!");
+        console.log(err);
+      } else {
+        res.json(result);
+      }
+    });
 });
 
-
-
 // Get all organizations
-
 recordRoutes.route("/organizations").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   dbConnect
     .collection("organizations")
-      .find({})
-      .limit(50)
-      .toArray(function (err, result) {
-        if (err) {
-          res.status(400).send("Error fetching listings!");
-        } else {
-            res.json(result);
-        }
-      });
-
+    .find({})
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching listings!");
+      } else {
+        res.json(result);
+      }
+    });
 });
 
 // post a new organization
-
-
 recordRoutes.route("/organizations").post(async function (req, res) {
   // new organization of Organization model
   const dbConnect = dbo.getDb();
@@ -293,156 +276,150 @@ recordRoutes.route("/organizations").post(async function (req, res) {
   organization.username = req.body.username;
   organization.status = req.body.status;
   organization.type = req.body.type;
-  
-  console.log(req.body);//for testing
-  console.log(organization);//for testing
 
-    dbConnect.collection("organizations").insertOne(organization, function (err, result) {
-        if (err) {
-            res.status(400).send("Error inserting organization!");
-            console.log(err);
-            console.log("Error inserting organization!");
-        } else {
-            res.json(result);
-            console.log("Organization added");
-        }
+  console.log(req.body); //for testing
+  console.log(organization); //for testing
+
+  dbConnect
+    .collection("organizations")
+    .insertOne(organization, function (err, result) {
+      if (err) {
+        res.status(400).send("Error inserting organization!");
+        console.log(err);
+        console.log("Error inserting organization!");
+      } else {
+        res.json(result);
+        console.log("Organization added");
+      }
     });
 });
 
 // Get an organization by OrganizationId
-
 recordRoutes.route("/organizations/:id").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
-    dbConnect
-        .collection("organizations")
-        .find({ OrganizationId: id })
-        .limit(50)
-        .toArray(function (err, result) {
-            if (err) {
-                res.status(400).send("Error fetching organization!");
-                console.log(err);
-            }
-            else {
-                res.json(result);
-                console.log("Organization fetched");
-            }
-        });
+  dbConnect
+    .collection("organizations")
+    .find({ OrganizationId: id })
+    .limit(50)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching organization!");
+        console.log(err);
+      } else {
+        res.json(result);
+        console.log("Organization fetched");
+      }
+    });
 });
 
 // Organization update
-
 recordRoutes.route("/organizations/:id").put(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
   const organization = req.body;
-    const query = { _id: id };
-    const updateDoc = {
-        $set: {
-            OrganizationId: organization.OrganizationId,
-            OrganizationName: organization.OrganizationName,
-            Description: organization.Description,
-            Address: organization.Address,
-            Phone: organization.Phone,
-            Email: organization.Email,
-            username: organization.username,
-            status: organization.status,
-            type: organization.type
-
-        }
-    };
-    dbConnect.collection("organizations").updateOne(query, updateDoc, function (err, result) {
-        if (err) {
-            res.status(400).send("Error updating organization!");
-            console.log(err);
-            console.log("Error updating organization!");
-        } else {
-            res.json(result);
-            console.log("Organization updated Successfully");
-        }
+  const query = { _id: id };
+  const updateDoc = {
+    $set: {
+      OrganizationId: organization.OrganizationId,
+      OrganizationName: organization.OrganizationName,
+      Description: organization.Description,
+      Address: organization.Address,
+      Phone: organization.Phone,
+      Email: organization.Email,
+      username: organization.username,
+      status: organization.status,
+      type: organization.type,
+    },
+  };
+  dbConnect
+    .collection("organizations")
+    .updateOne(query, updateDoc, function (err, result) {
+      if (err) {
+        res.status(400).send("Error updating organization!");
+        console.log(err);
+        console.log("Error updating organization!");
+      } else {
+        res.json(result);
+        console.log("Organization updated Successfully");
+      }
     });
 });
 
 // Organization delete
-
 recordRoutes.route("/organizations/:id").delete(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
-    const query = { _id: id };
-    dbConnect.collection("organizations").deleteOne(query, function (err, result) {
-        if (err) {
-            res.status(400).send("Error deleting organization!");
-            console.log(err);
-            console.log("Error deleting organization!");
-        } else {
-            res.json(result);
-            console.log("Organization deleted Successfully");
-        }
+  const query = { _id: id };
+  dbConnect
+    .collection("organizations")
+    .deleteOne(query, function (err, result) {
+      if (err) {
+        res.status(400).send("Error deleting organization!");
+        console.log(err);
+        console.log("Error deleting organization!");
+      } else {
+        res.json(result);
+        console.log("Organization deleted Successfully");
+      }
     });
 });
 
-
 // Get all bookings
-
 recordRoutes.route("/bookings").get(async function (req, res) {
-    const dbConnect = dbo.getDb();
-    dbConnect
-        .collection("bookings")
-        .find({})
-        .limit(150)
-        .toArray(function (err, result) {
-            if (err) {
-                res.status(400).send("Error fetching listings!");
-            } else {
-                res.json(result);
-            }
-        });
-
+  const dbConnect = dbo.getDb();
+  dbConnect
+    .collection("bookings")
+    .find({})
+    .limit(150)
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching listings!");
+      } else {
+        res.json(result);
+      }
+    });
 });
 
 // post a new booking
-
-
 recordRoutes.route("/bookings").post(async function (req, res) {
   const givenSet = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  //to generate a random string of 5 characters // confirmation code  
+  //to generate a random string of 5 characters // confirmation code
   let code = "";
-  for(let i=0; i<5; i++) {
-    let pos = Math.floor(Math.random()*givenSet.length);
+  for (let i = 0; i < 5; i++) {
+    let pos = Math.floor(Math.random() * givenSet.length);
     code += givenSet[pos];
   }
-    // new booking of Booking model
-    const dbConnect = dbo.getDb();
-    let booking = new Booking();
-    booking.BookingId = req.body.BookingId;
-    booking.BookingDate = req.body.BookingDate;
-    booking.BookingTime = req.body.BookingTime;
-    booking.Status = req.body.Status;
-    booking.BookingConfirmationCode = code;
-    booking.BookingNotes = req.body.BookingNotes;
-    booking.BookingCreated=new Date();
-    booking.BookingUpdated = req.body.BookingUpdated;
-    booking.BookingCancelled = req.body.bookingCancelled;
-    booking.BookingUserId = req.body.BookingUserId;
-    bookint.BookingServiceProviderId = req.body.BookingServiceProviderId;
-    
-    console.log(req.body);//for testing
-    console.log(booking);//for testing
-    dbConnect.collection("bookings").insertOne(booking, function (err, result) {
-        if (err) {
-            res.status(400).send("Error inserting booking!");
-            console.log(err);
-            console.log("Error inserting booking!");
-        } else {
-            res.json(result);
-            console.log("Booking added");
-        }
-    });
+  // new booking of Booking model
+  const dbConnect = dbo.getDb();
+  let booking = new Booking();
+  booking.BookingId = req.body.BookingId;
+  booking.BookingDate = req.body.BookingDate;
+  booking.BookingTime = req.body.BookingTime;
+  booking.Status = req.body.Status;
+  booking.BookingConfirmationCode = code;
+  booking.BookingNotes = req.body.BookingNotes;
+  booking.BookingCreated = new Date();
+  booking.BookingUpdated = req.body.BookingUpdated;
+  booking.BookingCancelled = req.body.bookingCancelled;
+  booking.BookingUserId = req.body.BookingUserId;
+  bookint.BookingServiceProviderId = req.body.BookingServiceProviderId;
+
+  console.log(req.body); //for testing
+  console.log(booking); //for testing
+  dbConnect.collection("bookings").insertOne(booking, function (err, result) {
+    if (err) {
+      res.status(400).send("Error inserting booking!");
+      console.log(err);
+      console.log("Error inserting booking!");
+    } else {
+      res.json(result);
+      console.log("Booking added");
+    }
+  });
 });
 
-
 // Get a booking by BookingId
-
 recordRoutes.route("/bookings/:id").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
@@ -464,7 +441,6 @@ recordRoutes.route("/bookings/:id").get(async function (req, res) {
 });
 
 // Booking update
-
 recordRoutes.route("/bookings/:id").put(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
@@ -487,10 +463,7 @@ recordRoutes.route("/bookings/:id").put(async function (req, res) {
   };
   dbConnect
     .collection("bookings")
-    .update
-    .one(query
-    , update
-    .Doc, function (err, result) {
+    .update.one(query, update.Doc, function (err, result) {
       if (err) {
         res.status(400).send("Error updating booking!");
         console.log(err);
@@ -503,26 +476,23 @@ recordRoutes.route("/bookings/:id").put(async function (req, res) {
 });
 
 // Delete a booking
-
 recordRoutes.route("/bookings/:id").delete(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
   const query = { _id: id };
   dbConnect.collection("bookings").deleteOne(query, function (err, result) {
     if (err) {
-      res.status(400).send("Error deleting booking! ",id);
+      res.status(400).send("Error deleting booking! ", id);
       console.log(err);
       console.log("Error deleting booking! ", id);
     } else {
       res.json(result);
-      console.log("Booking deleted Successfully",id);
+      console.log("Booking deleted Successfully", id);
     }
   });
 });
 
-
 //Get all bookings by UserId
-
 recordRoutes.route("/bookings/user/:id").get(async function (req, res) {
   const dbConnect = dbo.getDb();
   const id = req.params.id;
@@ -543,315 +513,27 @@ recordRoutes.route("/bookings/user/:id").get(async function (req, res) {
     });
 });
 
-
 // Get all bookings by Service Provider Id
-
-recordRoutes.route("/bookings/serviceprovider/:id").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  dbConnect
-    .collection("bookings")
-    .find({
-      BookingServiceProviderId: id,
-    })
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching booking!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Booking fetched");
-      }
-    });
-});
-
-//Time slots
-//Get all time slots
-
-recordRoutes.route("/timeslots").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  dbConnect
-    .collection("timeslots")
-    .find({})
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-
-// post a new time slot
-
-recordRoutes.route("/timeslots").post(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const timeslot = req.body;
-  dbConnect.collection("timeslots").insertOne(timeslot, function (err, result) {
-    if (err) {
-      res.status(400).send("Error inserting time slot!");
-      console.log(err);
-      console.log("Error inserting time slot!");
-    } else {
-      res.json(result);
-      console.log("Time slot added");
-    }
-  });
-});
-
-// Get a time slot by TimeSlotId
-
-recordRoutes.route("/timeslots/:id").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotId: id,
-    })
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slot!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slot fetched");
-      }
-    });
-});
-
-
-// Time slot update
-
-recordRoutes.route("/timeslots/:id").put(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  const timeslot = req.body;
-  const query = { _id: id };
-  const updateDoc = {
-    $set: {
-      TimeSlotId: timeslot.TimeSlotId,
-      TimeSlotDate: timeslot.TimeSlotDate,
-      TimeSlotStartTime: timeslot.TimeSlotStartTime,
-      TimeSlotEndTime: timeslot.TimeSlotEndTime,
-      TimeSlotStatus: timeslot.TimeSlotStatus,
-    },
-  };
-  dbConnect
-      .collection("timeslots")
-      .update
-      .one(query
-      , update
-      .Doc, function (err, result) {
+recordRoutes
+  .route("/bookings/serviceprovider/:id")
+  .get(async function (req, res) {
+    const dbConnect = dbo.getDb();
+    const id = req.params.id;
+    dbConnect
+      .collection("bookings")
+      .find({
+        BookingServiceProviderId: id,
+      })
+      .limit(50)
+      .toArray(function (err, result) {
         if (err) {
-          res.status(400).send("Error updating time slot!");
+          res.status(400).send("Error fetching booking!");
           console.log(err);
-          console.log("Error updating time slot!");
         } else {
           res.json(result);
-          console.log("Time slot updated Successfully");
+          console.log("Booking fetched");
         }
       });
   });
-
-// Delete a time slot
-
-recordRoutes.route("/timeslots/:id").delete(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  const query = { _id: id };
-  dbConnect.collection("timeslots").deleteOne(query, function (err, result) {
-    if (err) {
-      res.status(400).send("Error deleting time slot! ",id);
-      console.log(err);
-      console.log("Error deleting time slot! ", id);
-    } else {
-      res.json(result);
-      console.log("Time slot deleted Successfully",id);
-    }
-  });
-});
-
-// Get all time slots by date
-
-recordRoutes.route("/timeslots/date/:date").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const date = req.params.date;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotDate: date,
-    })
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-
-// Get all time slots by date and Service Provider Id
-
-recordRoutes.route("/timeslots/date/:date/serviceprovider/:id").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const date = req.params.date;
-  const id = req.params.id;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotDate: date,
-      TimeSlotServiceProviderId: id,
-    })
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-// Get all time slots by Service Provider Id
-
-recordRoutes.route("/timeslots/serviceprovider/:id").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotServiceProviderId: id,
-    })
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-// Get all time slots by Service Provider Id and Status
-
-recordRoutes.route("/timeslots/serviceprovider/:id/status/:status").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  const status = req.params.status;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotServiceProviderId: id,
-      TimeSlotStatus: status,
-    })
-    .limit(50)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-//Get all Slots by Organization Id
-
-recordRoutes.route("/timeslots/organization/:id").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotOrganizationId: id,
-    })
-    .limit(500)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-//Get all Slots by Organization Id and Status
-
-recordRoutes.route("/timeslots/organization/:id/status/:status").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  const status = req.params.status;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotOrganizationId: id,
-      TimeSlotStatus: status,
-    })
-    .limit(500)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-//Get all Slots by Organization Id and Date
-
-recordRoutes.route("/timeslots/organization/:id/date/:date").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const id = req.params.id;
-  const date = req.params.date;
-  dbConnect
-    .collection("timeslots")
-    .find({
-      TimeSlotOrganizationId: id,
-      TimeSlotDate: date,
-    })
-    .limit(500)
-    .toArray(function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching time slots!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Time slots fetched");
-      }
-    });
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = recordRoutes;

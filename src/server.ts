@@ -12,8 +12,15 @@ app.use(
   })
 );
 
+// Print URL Request for Debug
+app.use((req, res, next) => {
+  console.log(req.url)
+  next()
+})
+
 //routes
 app.use(require("./routes/record"));
+app.use(require("./routes/timeslot"))
 
 // test route
 app.get("/api", (req, res) => {
