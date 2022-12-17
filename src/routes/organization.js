@@ -15,22 +15,43 @@ recordRoutes.route("/organizations").get(async function (req, res) {
       if (err) {
         res.status(400).send("Error fetching listings!");
       } else {
+        console.log("Getting All orgs");
         res.json(result);
       }
     });
 });
+
+// Get an organization by userId
+recordRoutes.route("/organization/:id").get(async function (req, res) {
+  console.log("Fetching individual organization");
+  const dbConnect = dbo.getDb();
+  const serviceProviderId = req.params.id;
+  console.log("params: ", req.params);
+  dbConnect
+    .collection("organizations")
+    .findOne({ serviceProviderId: serviceProviderId }, function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching organization!");
+        console.log(err);
+      } else {
+        res.json(result);
+      }
+    });
+});
+
+// ----- POST ----- //
 
 // post a new organization
 recordRoutes.route("/organizations").post(async function (req, res) {
   // new organization of Organization model
   const dbConnect = dbo.getDb();
   let organization = new Organization();
-  organization.name = req.body.OrganizationName;
-  organization.description = req.body.Description;
-  organization.address = req.body.Address;
-  organization.phone = req.body.Phone;
-  organization.email = req.body.Email;
-  organization.serviceProviderId = req.body.username;
+  organization.name = req.body.name;
+  organization.description = req.body.description;
+  organization.address = req.body.address;
+  organization.phone = req.body.phone;
+  organization.email = req.body.email;
+  organization.serviceProviderId = req.body.serviceProviderId;
   organization.status = req.body.status;
 
   console.log(req.body); //for testing
@@ -50,23 +71,6 @@ recordRoutes.route("/organizations").post(async function (req, res) {
     });
 });
 
-// Get an organization by userId
-recordRoutes.route("/organizations/:id").get(async function (req, res) {
-  const dbConnect = dbo.getDb();
-  const serviceProviderId = req.params.id;
-  dbConnect
-    .collection("organizations")
-    .findOne({ serviceProviderId: serviceProviderId }, function (err, result) {
-      if (err) {
-        res.status(400).send("Error fetching organization!");
-        console.log(err);
-      } else {
-        res.json(result);
-        console.log("Organization fetched");
-      }
-    });
-});
-
 // Organization update
 recordRoutes.route("/organizations/:id").put(async function (req, res) {
   const dbConnect = dbo.getDb();
@@ -75,15 +79,13 @@ recordRoutes.route("/organizations/:id").put(async function (req, res) {
   const query = { _id: id };
   const updateDoc = {
     $set: {
-      OrganizationId: organization.OrganizationId,
-      OrganizationName: organization.OrganizationName,
-      Description: organization.Description,
-      Address: organization.Address,
-      Phone: organization.Phone,
-      Email: organization.Email,
-      username: organization.username,
+      name: organization.OrganizationName,
+      description: organization.Description,
+      address: organization.Address,
+      phone: organization.Phone,
+      email: organization.Email,
+      serviceProviderId: organization.username,
       status: organization.status,
-      type: organization.type,
     },
   };
   dbConnect
