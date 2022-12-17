@@ -3,7 +3,6 @@ const express = require("express");
 const dbo = require("../db/conn");
 const { User } = require("../models/user"); // User model
 const { Ticket } = require("../models/ticket"); // Ticket model
-const { Organization } = require("../models/organization"); // Organization model
 const { Booking } = require("../models/booking"); // Booking model
 const { TimeSlot } = require("../models/timeslot"); // TimeSlot model
 
