@@ -22,6 +22,7 @@ app.use((req, res, next) => {
 app.use(require("./routes/record"));
 app.use(require("./routes/timeslot"));
 app.use(require("./routes/organization"));
+app.use(require("./routes/booking"));
 
 // test route
 app.get("/api", (req, res) => {
