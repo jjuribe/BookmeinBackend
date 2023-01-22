@@ -75,7 +75,7 @@ recordRoutes.route("/login").post(async function (req, res) {
       function (err, result) {
         console.log("Login in server.ts")
 
-        if (err || result == null) {
+        if (err || result === null) {
           console.log(err);
           console.log("user or password not found");
           res.status(400).send("Error logging in!");
